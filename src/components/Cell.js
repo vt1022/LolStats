@@ -6,7 +6,7 @@ const StyledCell = styled.div`
     border-right: 1px solid black;
     padding: 0.4rem 1rem;
     text-align: right;
-    background: ${({ row }) => (row % 2 ? null : '#e2e2e2')};
+    background: ${({ row }) => (row % 2 ? '#fff' : '#e2e2e2')};
 
     &:nth-child(4n + 1) {
         text-align: left;

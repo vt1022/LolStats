@@ -4,6 +4,7 @@ import axios from 'axios'
 import PagesNav from './components/PagesNav'
 import Table from './components/Table'
 import Cell, { HeaderCell } from './components/Cell'
+import { API_KEY } from './configs'
 
 const App = () => {
     const [data, setData] = useState({ points: [] }) // [[...page1],[...page2],...]
@@ -27,7 +28,6 @@ const App = () => {
 
     /* call api on page change and save sorted variations */
     useEffect(() => {
-        const API_KEY = 'RGAPI-bf75f61d-b43a-478e-b60e-5804b5029718'
         let isCancel = false
 
         const getData = async () => {
@@ -88,7 +88,7 @@ const App = () => {
             losses: iSort(points, 'losses'),
             summoner: iSort(points, 'summonerName')
         })
-        // console.log('data', data)
+        console.log('data', data)
     }, [data.points])
 
     return (
