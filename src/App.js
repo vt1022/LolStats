@@ -6,13 +6,14 @@ import Table from './components/Table'
 import Cell, { HeaderCell } from './components/Cell'
 
 const App = () => {
-    const [data, setData] = useState({}) // [[...page1],[...page2],...]
+    const [data, setData] = useState({ points: [] }) // [[...page1],[...page2],...]
     const [page, setPage] = useState(1)
+    const [sort, setSort] = useState('points')
 
     const headers = ['Summoner', 'Points', 'Wins', 'Losses']
-    const createHeaders = (header, i) => <HeaderCell key={i} value={header} />
+    const createHeaders = (header, i) => <HeaderCell key={i} value={header} setSort={setSort} />
 
-    const createCell = (summoner, i) => {
+    const createRow = (summoner, i) => {
         const { summonerName, leaguePoints, wins, losses } = summoner
         return (
             <Fragment key={i}>
@@ -64,10 +65,31 @@ const App = () => {
     }, [page])
 
     useEffect(() => {
-        console.log('data', data)
+        const { points } = data
 
-        // setData({ ...data, summoner: [], wins: [], losses: [] })
-    }, [data])
+        const iSort = (arr, keyToCompare) => {
+            const result = [...arr]
+
+            for (let i = 0; i < result.length - 1; i++) {
+                for (let j = i + 1; j < result.length; j++) {
+                    if (result[j][keyToCompare] > result[i][keyToCompare]) {
+                        const temp = result[i]
+                        result[i] = result[j]
+                        result[j] = temp
+                    }
+                }
+            }
+            return result
+        }
+
+        setData({
+            ...data,
+            wins: iSort(points, 'wins'),
+            losses: iSort(points, 'losses'),
+            summoner: iSort(points, 'summonerName')
+        })
+        // console.log('data', data)
+    }, [data.points])
 
     return (
         <div className='App'>
@@ -75,7 +97,7 @@ const App = () => {
             <PagesNav />
             <Table>
                 {headers.map(createHeaders)}
-                {data.points?.map(createCell)}
+                {data[sort]?.map(createRow)}
             </Table>
         </div>
     )

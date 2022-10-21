@@ -20,7 +20,10 @@ const StyledHeader = styled(StyledCell)`
     cursor: pointer;
 `
 
-export const HeaderCell = ({ value }) => <StyledHeader>{value}</StyledHeader>
+export const HeaderCell = ({ value, setSort }) => {
+    const clickHandler = () => setSort(value.toLowerCase())
+    return <StyledHeader onClick={clickHandler}>{value}</StyledHeader>
+}
 
 const Cell = ({ row, value }) => <StyledCell row={row}>{value}</StyledCell>
 
