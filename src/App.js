@@ -1,24 +1,25 @@
 import './App.css'
-import axios from 'axios'
 import React, { useEffect, useState, Fragment } from 'react'
+import axios from 'axios'
+import PagesNav from './components/PagesNav'
 import Table from './components/Table'
 import Cell, { HeaderCell } from './components/Cell'
 
 const App = () => {
-    const [data, setData] = useState([]) // [[...page1],[...page2],...]
+    const [data, setData] = useState({}) // [[...page1],[...page2],...]
     const [page, setPage] = useState(1)
 
     const headers = ['Summoner', 'Points', 'Wins', 'Losses']
-    const createHeaders = (header, i) => <HeaderCell data={{ value: header }} key={i} />
+    const createHeaders = (header, i) => <HeaderCell key={i} value={header} />
 
     const createCell = (summoner, i) => {
         const { summonerName, leaguePoints, wins, losses } = summoner
         return (
             <Fragment key={i}>
-                <Cell data={{ value: summonerName }} />
-                <Cell data={{ value: leaguePoints }} />
-                <Cell data={{ value: wins }} />
-                <Cell data={{ value: losses }} />
+                <Cell row={i} value={summonerName} />
+                <Cell row={i} value={leaguePoints} />
+                <Cell row={i} value={wins} />
+                <Cell row={i} value={losses} />
             </Fragment>
         )
     }
@@ -30,12 +31,12 @@ const App = () => {
 
         const getData = async () => {
             try {
-                const res = await axios.get(
+                const response = await axios.get(
                     `https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=${page}&api_key=${API_KEY}`
                 )
 
                 if (!isCancel) {
-                    setData(res.data)
+                    setData({ points: response.data })
                 }
             } catch (error) {
                 if (!isCancel) {
@@ -64,14 +65,17 @@ const App = () => {
 
     useEffect(() => {
         console.log('data', data)
+
+        // setData({ ...data, summoner: [], wins: [], losses: [] })
     }, [data])
 
     return (
         <div className='App'>
             <h1>LoL Stats</h1>
+            <PagesNav />
             <Table>
                 {headers.map(createHeaders)}
-                {data.map(createCell)}
+                {data.points?.map(createCell)}
             </Table>
         </div>
     )
