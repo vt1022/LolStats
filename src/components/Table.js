@@ -6,7 +6,7 @@ const StyledTable = styled.div`
     grid-template-columns: repeat(4, min-content);
     border-top: 1px solid black;
     border-left: 1px solid black;
-    margin: 0 auto;
+    margin: 1rem auto;
     width: min-content;
 `
 

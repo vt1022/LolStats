@@ -20,8 +20,16 @@ const StyledHeader = styled(StyledCell)`
     cursor: pointer;
 `
 
-export const HeaderCell = ({ value, setSort }) => {
-    const clickHandler = () => setSort(value.toLowerCase())
+export const HeaderCell = ({ value, setSort, sort }) => {
+    const direction =
+        sort.value === value.toLowerCase() && sort.direction === 'descending'
+            ? 'ascending'
+            : sort.value === value.toLowerCase() && sort.direction === 'ascending'
+            ? 'descending'
+            : sort.direction
+
+    const clickHandler = () => setSort({ value: value.toLowerCase(), direction })
+
     return <StyledHeader onClick={clickHandler}>{value}</StyledHeader>
 }
 

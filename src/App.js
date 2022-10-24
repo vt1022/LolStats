@@ -5,14 +5,16 @@ import PagesNav from './components/PagesNav'
 import Table from './components/Table'
 import Cell, { HeaderCell } from './components/Cell'
 import { API_KEY } from './configs'
+import DivisionPicker from './components/DivisionPicker'
 
 const App = () => {
-    const [data, setData] = useState({ points: [] }) // [[...page1],[...page2],...]
-    const [page, setPage] = useState(1)
-    const [sort, setSort] = useState('points')
+    const [data, setData] = useState(() => ({ raw: { descending: [] } }))
+    const [sort, setSort] = useState(() => ({ value: 'raw', direction: 'descending' }))
+    const [query, setQuery] = useState(() => ({ page: 1, division: 'I', tier: 'CHALLENGER' }))
+    const { page, division, tier } = query
 
     const headers = ['Summoner', 'Points', 'Wins', 'Losses']
-    const createHeaders = (header, i) => <HeaderCell key={i} value={header} setSort={setSort} />
+    const createHeaders = (header, i) => <HeaderCell key={i} value={header} setSort={setSort} sort={sort} />
 
     const createRow = (summoner, i) => {
         const { summonerName, leaguePoints, wins, losses } = summoner
@@ -26,18 +28,34 @@ const App = () => {
         )
     }
 
+    const iSort = (arr, keyToCompare) => {
+        const result = [...arr]
+
+        for (let i = 0; i < result.length - 1; i++) {
+            for (let j = i + 1; j < result.length; j++) {
+                if (result[j][keyToCompare] > result[i][keyToCompare]) {
+                    const temp = result[i]
+                    result[i] = result[j]
+                    result[j] = temp
+                }
+            }
+        }
+        return result
+    }
+
     /* call api on page change and save sorted variations */
     useEffect(() => {
         let isCancel = false
+        setData({ raw: { descending: [] } })
 
         const getData = async () => {
             try {
                 const response = await axios.get(
-                    `https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=${page}&api_key=${API_KEY}`
+                    `https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}&api_key=${API_KEY}`
                 )
 
                 if (!isCancel) {
-                    setData({ points: response.data })
+                    setData({ raw: { descending: response.data } })
                 }
             } catch (error) {
                 if (!isCancel) {
@@ -62,42 +80,29 @@ const App = () => {
         return () => {
             isCancel = true
         }
-    }, [page])
+    }, [query, page])
 
     useEffect(() => {
-        const { points } = data
-
-        const iSort = (arr, keyToCompare) => {
-            const result = [...arr]
-
-            for (let i = 0; i < result.length - 1; i++) {
-                for (let j = i + 1; j < result.length; j++) {
-                    if (result[j][keyToCompare] > result[i][keyToCompare]) {
-                        const temp = result[i]
-                        result[i] = result[j]
-                        result[j] = temp
-                    }
-                }
-            }
-            return result
-        }
+        const { descending: rawData } = data.raw
 
         setData({
             ...data,
-            wins: iSort(points, 'wins'),
-            losses: iSort(points, 'losses'),
-            summoner: iSort(points, 'summonerName')
+            points: { descending: iSort(rawData, 'leaguePoints'), ascending: iSort(rawData, 'leaguePoints').reverse() },
+            wins: { descending: iSort(rawData, 'wins'), ascending: iSort(rawData, 'wins').reverse() },
+            losses: { descending: iSort(rawData, 'losses'), ascending: iSort(rawData, 'losses').reverse() },
+            summoner: { descending: iSort(rawData, 'summonerName'), ascending: iSort(rawData, 'summonerName').reverse() }
         })
         console.log('data', data)
-    }, [data.points])
+    }, [data.raw])
 
     return (
         <div className='App'>
             <h1>LoL Stats</h1>
-            <PagesNav />
+            <DivisionPicker currTier={tier} setQuery={setQuery} />
+            {/* <PagesNav setQuery={setQuery} /> */}
             <Table>
                 {headers.map(createHeaders)}
-                {data[sort]?.map(createRow)}
+                {data[sort.value]?.[sort.direction]?.map(createRow)}
             </Table>
         </div>
     )
