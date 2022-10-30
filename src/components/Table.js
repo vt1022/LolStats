@@ -13,3 +13,4 @@ const StyledTable = styled.div`
 const Table = ({ children }) => <StyledTable>{children}</StyledTable>
 
 export default Table
+ 
