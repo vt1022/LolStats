@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/LolStats/static/css/main.0e32d1c5.css",
+    "main.js": "/LolStats/static/js/main.687126ef.js",
+    "static/js/787.10761401.chunk.js": "/LolStats/static/js/787.10761401.chunk.js",
+    "index.html": "/LolStats/index.html",
+    "main.0e32d1c5.css.map": "/LolStats/static/css/main.0e32d1c5.css.map",
+    "main.687126ef.js.map": "/LolStats/static/js/main.687126ef.js.map",
+    "787.10761401.chunk.js.map": "/LolStats/static/js/787.10761401.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0e32d1c5.css",
+    "static/js/main.687126ef.js"
+  ]
+}
