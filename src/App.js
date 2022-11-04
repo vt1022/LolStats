@@ -6,6 +6,7 @@ import Table from './components/Table'
 import Cell, { HeaderCell } from './components/Cell'
 import { API_KEY } from './configs'
 import DivisionPicker from './components/DivisionPicker'
+import { useMemo } from 'react'
 
 const App = () => {
     const [data, setData] = useState(() => ({ raw: { descending: [] } }))
@@ -13,7 +14,8 @@ const App = () => {
     const [query, setQuery] = useState(() => ({ page: 1, division: 'I', tier: 'CHALLENGER' }))
     const { page, division, tier } = query
 
-    const headers = ['Summoner', 'Points', 'Wins', 'Losses']
+    const headers = useMemo(() => ['Summoner', 'Points', 'Wins', 'Losses'], [])
+    
     const createHeaders = (header, i) => <HeaderCell key={i} value={header} setSort={setSort} sort={sort} />
 
     const createRow = (summoner, i) => {
@@ -80,13 +82,14 @@ const App = () => {
         return () => {
             isCancel = true
         }
-    }, [query, page])
+    }, [query, page, tier, division])
 
     useEffect(() => {
+        // move this logic into the fetch
         const { descending: rawData } = data.raw
 
         setData({
-            ...data,
+            raw: data.raw,
             points: { descending: iSort(rawData, 'leaguePoints'), ascending: iSort(rawData, 'leaguePoints').reverse() },
             wins: { descending: iSort(rawData, 'wins'), ascending: iSort(rawData, 'wins').reverse() },
             losses: { descending: iSort(rawData, 'losses'), ascending: iSort(rawData, 'losses').reverse() },
